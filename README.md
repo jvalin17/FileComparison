@@ -46,10 +46,10 @@ Both Empty Files Test
 Both Same Files Test 
 Both Different Image Files Test  
 Two Different Extension Files Test  
-Different Files Test  
-Both Different Image Files Test 
-Invalid File Location Test 
-One Extra Space Test 
-One Letter Different Test 
-Both Same Audio Files Test 
-Both Same Image Files Test 
+Different Files Test   
+Both Different Image Files Test  
+Invalid File Location Test  
+One Extra Space Test  
+One Letter Different Test  
+Both Same Audio Files Test  
+Both Same Image Files Test  
