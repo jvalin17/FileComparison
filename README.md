@@ -24,24 +24,24 @@ A function is written that returns True if both files are same and returns False
 
 ##### Algorithm:
 
-First it will check if both file sizes are same or not.
-If file sizes are not same, it means it is different files and so it will return Boolean False
+First it will check if both file sizes are same or not. 
+If file sizes are not same, it means it is different files and so it will return Boolean False. 
 
-If both file sizes are same
-It will compare both files’ content with a chunk of bytes at a time.
+If both file sizes are same. 
+It will compare both files’ content with a chunk of bytes at a time. 
 
-If the chunks do not match, it will return Boolean value false and break the loop
+If the chunks do not match, it will return Boolean value false and break the loop. 
 
-At the end, if everything is same, it will return 
+At the end, if everything is same, it will return. 
 
 
 ##### Complexity:
- Time Complexity: O(n) if size is n bytes
- Space Complexity: O(m) if chunk size is m
+ Time Complexity: O(n) if size is n bytes 
+ Space Complexity: O(m) if chunk size is m 
 
 
 ##### Tests:
-It checks for following tests:
+It checks for following tests: 
 Both Empty Files Test 
 Both Same Files Test 
 Both Different Image Files Test 
