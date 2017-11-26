@@ -1,4 +1,4 @@
-# FileComparison
+## FileComparison
 
 #### Checks if two files are same or not.
 
@@ -41,7 +41,7 @@ At the end, if everything is same, it will return.
 
 
 ##### Tests:
-It checks for following tests: 
+It checks for following tests:  
 Both Empty Files Test   
 Both Same Files Test 
 Both Different Image Files Test  
