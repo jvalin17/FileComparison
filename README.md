@@ -42,11 +42,11 @@ At the end, if everything is same, it will return.
 
 ##### Tests:
 It checks for following tests: 
-Both Empty Files Test 
+Both Empty Files Test   
 Both Same Files Test 
-Both Different Image Files Test 
-Two Different Extension Files Test 
-Different Files Test 
+Both Different Image Files Test  
+Two Different Extension Files Test  
+Different Files Test  
 Both Different Image Files Test 
 Invalid File Location Test 
 One Extra Space Test 
