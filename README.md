@@ -7,8 +7,8 @@
 
 ##### How to Run:
 1.	Open Terminal/Command line.
-2.	Go to “Vungle Assignment” folder
-3.	Go to “Test_Files” folder
+2.	Go to “Vungle_Assignment” folder
+3.	Go to “FileCompare” folder
 4.	Run Python program by using command – python FileComparisonTest.py
 
 
