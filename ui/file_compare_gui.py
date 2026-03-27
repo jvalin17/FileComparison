@@ -108,8 +108,9 @@ class FileCompareGUI:
 
         # -- Status bar --
         self.status_var = tk.StringVar(value="Ready")
-        status_bar = ttk.Label(self.root, textvariable=self.status_var, relief="sunken", anchor="w")
-        status_bar.pack(fill="x", side="bottom", padx=10, pady=(0, 5))
+        status_frame = tk.Frame(self.root, bd=1, relief="groove")
+        status_frame.pack(fill="x", side="bottom", padx=10, pady=(0, 5))
+        ttk.Label(status_frame, textvariable=self.status_var, anchor="w").pack(fill="x", padx=4, pady=2)
 
     def _bind_keys(self):
         self.root.bind("<Return>", lambda e: self._on_compare())

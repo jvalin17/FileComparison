@@ -70,6 +70,12 @@
 - Removed `_display_simple_result` method (dead code after detailed-by-default)
 - Net result: slightly fewer lines, simpler logic, cleaner UI
 
+#### Status Bar Fix + README Rewrite + Auto-Install
+- **Status:** COMPLETE
+- Fixed status bar: replaced `ttk.Label(relief="sunken")` with `tk.Frame(relief="groove")` + inner label. macOS ttk doesn't render sunken relief properly — only left/top borders showed.
+- Rewrote README: added "Quick Start" clone-to-run instructions, explained what `run.sh` does automatically
+- Updated `run.sh`: auto-installs tkinter via Homebrew (macOS) or apt (Linux) if missing
+
 ### Error Log
 
 | # | What | Error | Resolution | Attempt |
