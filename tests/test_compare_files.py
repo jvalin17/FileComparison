@@ -19,18 +19,18 @@ class TestCompareFiles(unittest.TestCase):
     # --- Existing tests (renamed to convention) ---
 
     def test_compare_files_one_letter_diff_returns_false(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
-        f2 = os.path.join(self.resources, "one_letter_different_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
+        f2 = os.path.join(self.resources, "sample_doc_b.docx")
         self.assertFalse(compare_files(f1, f2))
 
     def test_compare_files_extra_space_returns_false(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
-        f2 = os.path.join(self.resources, "extra_space_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
+        f2 = os.path.join(self.resources, "sample_doc_c.docx")
         self.assertFalse(compare_files(f1, f2))
 
     def test_compare_files_different_pdfs_returns_false(self):
-        f1 = os.path.join(self.resources, "Jvalin_Dave_resume_ca.pdf")
-        f2 = os.path.join(self.resources, "Jvalin_Dave_resume_gen.pdf")
+        f1 = os.path.join(self.resources, "sample_pdf_a.pdf")
+        f2 = os.path.join(self.resources, "sample_pdf_b.pdf")
         self.assertFalse(compare_files(f1, f2))
 
     def test_compare_files_both_empty_returns_true(self):
@@ -39,7 +39,7 @@ class TestCompareFiles(unittest.TestCase):
         self.assertTrue(compare_files(f1, f2))
 
     def test_compare_files_same_path_returns_true(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
         self.assertTrue(compare_files(f1, f1))
 
     def test_compare_files_identical_images_returns_true(self):
@@ -63,12 +63,12 @@ class TestCompareFiles(unittest.TestCase):
         self.assertFalse(compare_files(f1, f2))
 
     def test_compare_files_different_extensions_returns_false(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
-        f2 = os.path.join(self.resources, "resume.pdf")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
+        f2 = os.path.join(self.resources, "sample_pdf_c.pdf")
         self.assertFalse(compare_files(f1, f2))
 
     def test_compare_files_invalid_path_returns_false(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
         f2 = os.path.join(self.resources, "this_file_does_not_exist.docx")
         self.assertFalse(compare_files(f1, f2))
 
@@ -81,11 +81,11 @@ class TestCompareFiles(unittest.TestCase):
 
     def test_compare_files_empty_string_path_returns_false(self):
         f1 = ""
-        f2 = os.path.join(self.resources, "actual_resume.docx")
+        f2 = os.path.join(self.resources, "sample_doc_a.docx")
         self.assertFalse(compare_files(f1, f2))
 
     def test_compare_files_symlink_same_file_returns_true(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
         with tempfile.TemporaryDirectory() as tmp:
             symlink_path = os.path.join(tmp, "link_to_resume.docx")
             os.symlink(f1, symlink_path)
@@ -107,8 +107,8 @@ class TestCompareFiles(unittest.TestCase):
         self.assertFalse(compare_files(f1, f2, chunk_size=64))
 
     def test_compare_files_same_file_different_path_returns_true(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
-        f2 = os.path.join(self.resources, "..", "resources", "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
+        f2 = os.path.join(self.resources, "..", "resources", "sample_doc_a.docx")
         self.assertTrue(compare_files(f1, f2))
 
 

@@ -17,7 +17,7 @@ class TestCompareFilesDetailed(unittest.TestCase):
         )
 
     def test_compare_files_detailed_same_file_returns_same_file_reason(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
         result = compare_files_detailed(f1, f1)
         self.assertTrue(result['match'])
         self.assertEqual(result['reason'], 'same_file')
@@ -40,15 +40,15 @@ class TestCompareFilesDetailed(unittest.TestCase):
         self.assertIsNone(result['first_diff_offset'])
 
     def test_compare_files_detailed_size_mismatch_returns_size_mismatch_reason(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
-        f2 = os.path.join(self.resources, "extra_space_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
+        f2 = os.path.join(self.resources, "sample_doc_c.docx")
         result = compare_files_detailed(f1, f2)
         self.assertFalse(result['match'])
         self.assertIn(result['reason'], ['size_mismatch', 'content_mismatch'])
 
     def test_compare_files_detailed_content_mismatch_returns_offset(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
-        f2 = os.path.join(self.resources, "one_letter_different_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
+        f2 = os.path.join(self.resources, "sample_doc_b.docx")
         result = compare_files_detailed(f1, f2)
         self.assertFalse(result['match'])
         if result['reason'] == 'content_mismatch':
@@ -56,7 +56,7 @@ class TestCompareFilesDetailed(unittest.TestCase):
             self.assertGreaterEqual(result['first_diff_offset'], 0)
 
     def test_compare_files_detailed_invalid_path_returns_error_reason(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
         f2 = os.path.join(self.resources, "this_file_does_not_exist.docx")
         result = compare_files_detailed(f1, f2)
         self.assertFalse(result['match'])
@@ -78,7 +78,7 @@ class TestCompareFilesDetailed(unittest.TestCase):
             self.assertEqual(result['first_diff_offset'], 100)
 
     def test_compare_files_detailed_symlink_returns_same_file_reason(self):
-        f1 = os.path.join(self.resources, "actual_resume.docx")
+        f1 = os.path.join(self.resources, "sample_doc_a.docx")
         with tempfile.TemporaryDirectory() as tmp:
             symlink_path = os.path.join(tmp, "link.docx")
             os.symlink(f1, symlink_path)

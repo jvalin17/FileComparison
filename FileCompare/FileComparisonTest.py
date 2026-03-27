@@ -10,20 +10,20 @@ class TestFileComparison(unittest.TestCase):
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
 
     def test_OneLetterDifferent(self):
-        file_1_loc = os.path.join(self.dir_path, "resources", "actual_resume.docx")
-        file_2_loc = os.path.join(self.dir_path, "resources", "one_letter_different_resume.docx")
+        file_1_loc = os.path.join(self.dir_path, "resources", "sample_doc_a.docx")
+        file_2_loc = os.path.join(self.dir_path, "resources", "sample_doc_b.docx")
         self.assertEqual(compare_files(file_1_loc, file_2_loc), False)
         print("\nOne Letter Different Test Passed")
 
     def test_OneExtraSpace(self):
-        file_1_loc = os.path.join(self.dir_path, "resources", "actual_resume.docx")
-        file_2_loc = os.path.join(self.dir_path, "resources", "extra_space_resume.docx")
+        file_1_loc = os.path.join(self.dir_path, "resources", "sample_doc_a.docx")
+        file_2_loc = os.path.join(self.dir_path, "resources", "sample_doc_c.docx")
         self.assertEqual(compare_files(file_1_loc, file_2_loc), False)
         print("\nOne Extra Space Test Passed")
 
     def test_DifferentFiles(self):
-        file_1_loc = os.path.join(self.dir_path, "resources", "Jvalin_Dave_resume_ca.pdf")
-        file_2_loc = os.path.join(self.dir_path, "resources", "Jvalin_Dave_resume_gen.pdf")
+        file_1_loc = os.path.join(self.dir_path, "resources", "sample_pdf_a.pdf")
+        file_2_loc = os.path.join(self.dir_path, "resources", "sample_pdf_b.pdf")
         self.assertEqual(compare_files(file_1_loc, file_2_loc), False)
         print("\nDifferent Files Test Passed")
 
@@ -34,8 +34,8 @@ class TestFileComparison(unittest.TestCase):
         print("\nBoth Empty Files Test Passed")
 
     def test_BothSameFiles(self):
-        file_1_loc = os.path.join(self.dir_path, "resources", "actual_resume.docx")
-        file_2_loc = os.path.join(self.dir_path, "resources", "actual_resume.docx")
+        file_1_loc = os.path.join(self.dir_path, "resources", "sample_doc_a.docx")
+        file_2_loc = os.path.join(self.dir_path, "resources", "sample_doc_a.docx")
         self.assertEqual(compare_files(file_1_loc, file_2_loc), True)
         print("\nBoth Same Files Test Passed")
 
@@ -64,13 +64,13 @@ class TestFileComparison(unittest.TestCase):
         print("\nBoth Different Audio Files Test Passed")
 
     def test_DifferentExtensionFiles(self):
-        file_1_loc = os.path.join(self.dir_path, "resources", "actual_resume.docx")
-        file_2_loc = os.path.join(self.dir_path, "resources", "resume.pdf")
+        file_1_loc = os.path.join(self.dir_path, "resources", "sample_doc_a.docx")
+        file_2_loc = os.path.join(self.dir_path, "resources", "sample_pdf_c.pdf")
         self.assertEqual(compare_files(file_1_loc, file_2_loc), False)
         print("\nTwo Different Extension Files Test Passed")
 
     def test_InvalidLocation(self):
-        file_1_loc = os.path.join(self.dir_path, "resources", "actual_resume.docx")
+        file_1_loc = os.path.join(self.dir_path, "resources", "sample_doc_a.docx")
         file_2_loc = os.path.join(self.dir_path, "resources", "this_file_does_not_exist.docx")
         self.assertEqual(compare_files(file_1_loc, file_2_loc), False)
         print("\nInvalid File Location Test Passed")
