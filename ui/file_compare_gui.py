@@ -245,20 +245,22 @@ class FileCompareGUI:
         if differing_files:
             for file_name in differing_files:
                 output.append((f"  {file_name}\n", "mismatch"))
+                output.append((f"    Dir 1: {os.path.join(path_1, file_name)}\n", "info"))
+                output.append((f"    Dir 2: {os.path.join(path_2, file_name)}\n", "info"))
         else:
             output.append(("  (none)\n", "info"))
 
         output.append((f"\nOnly in Dir 1 ({len(only_in_first)}):\n", "mismatch"))
         if only_in_first:
             for file_name in only_in_first:
-                output.append((f"  {file_name}\n", "mismatch"))
+                output.append((f"  {os.path.join(path_1, file_name)}\n", "mismatch"))
         else:
             output.append(("  (none)\n", "info"))
 
         output.append((f"\nOnly in Dir 2 ({len(only_in_second)}):\n", "mismatch"))
         if only_in_second:
             for file_name in only_in_second:
-                output.append((f"  {file_name}\n", "mismatch"))
+                output.append((f"  {os.path.join(path_2, file_name)}\n", "mismatch"))
         else:
             output.append(("  (none)\n", "info"))
 
