@@ -45,6 +45,41 @@ compare_directories("/path/to/dir_a", "/path/to/dir_b")
 | Time | O(n) where n = file size in bytes |
 | Space | O(m) where m = chunk size |
 
+#### Desktop GUI
+
+A lightweight desktop GUI with zero external dependencies (uses Python's built-in `tkinter`).
+
+**Features:**
+- Compare files or directories (toggle via radio buttons)
+- Browse buttons for file/directory selection
+- Configurable chunk size (64, 1024, 8192, 65536)
+- Detailed mode: shows reason and exact byte offset of first difference
+- Color-coded results (green = match, red = mismatch)
+- Read-only — never writes or modifies your files
+
+**Launch:**
+```bash
+# macOS / Linux
+cd ui && ./run.sh
+
+# Windows
+cd ui && run.bat
+
+# Direct
+python3 ui/app.py
+```
+
+**Requirements:** Python 3 with tkinter. If tkinter is missing:
+```bash
+# macOS
+brew install python-tk@3.14
+
+# Ubuntu/Debian
+sudo apt install python3-tk
+
+# Windows — tkinter is included with the standard Python installer
+```
+
 #### Project Structure
 
 ```
@@ -57,8 +92,11 @@ FileComparison/
 │   ├── test_compare_files.py        # 18 tests
 │   ├── test_compare_files_detailed.py  # 8 tests
 │   └── test_compare_directories.py  # 6 tests
-├── planning.md
-└── session_log.md
+└── ui/
+    ├── app.py                        # Entry point
+    ├── file_compare_gui.py           # GUI (single file, ~220 lines)
+    ├── run.sh                        # macOS/Linux launcher
+    └── run.bat                       # Windows launcher
 ```
 
 #### Running Tests
