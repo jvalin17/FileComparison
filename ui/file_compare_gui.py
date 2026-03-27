@@ -3,11 +3,16 @@ import threading
 import tkinter as tk
 from tkinter import ttk, filedialog
 
-from file_checker import compare_files, compare_files_detailed, compare_directories
+from file_checker import compare_files_detailed, compare_directories
 
 
-CHUNK_SIZES = [64, 1024, 8192, 65536]
-DEFAULT_CHUNK_INDEX = 2  # 8192
+CHUNK_OPTIONS = {
+    "Tiny (precise, slower)": 64,
+    "Small": 1024,
+    "Standard": 8192,
+    "Large (fast, more memory)": 65536,
+}
+DEFAULT_CHUNK_LABEL = "Standard"
 
 
 class FileCompareGUI:
@@ -19,8 +24,7 @@ class FileCompareGUI:
         self.root.resizable(True, True)
 
         self.mode = tk.StringVar(value="files")
-        self.detailed = tk.BooleanVar(value=False)
-        self.chunk_var = tk.StringVar(value=str(CHUNK_SIZES[DEFAULT_CHUNK_INDEX]))
+        self.chunk_var = tk.StringVar(value=DEFAULT_CHUNK_LABEL)
 
         self._build_ui()
         self._bind_keys()
@@ -65,18 +69,13 @@ class FileCompareGUI:
         opts_frame = ttk.LabelFrame(self.root, text="Options")
         opts_frame.pack(fill="x", **pad)
 
-        ttk.Label(opts_frame, text="Chunk Size:").pack(side="left", padx=(10, 5), pady=5)
+        ttk.Label(opts_frame, text="Speed:").pack(side="left", padx=(10, 5), pady=5)
         self.chunk_combo = ttk.Combobox(
             opts_frame, textvariable=self.chunk_var,
-            values=[str(c) for c in CHUNK_SIZES],
-            state="readonly", width=8
+            values=list(CHUNK_OPTIONS.keys()),
+            state="readonly", width=24
         )
         self.chunk_combo.pack(side="left", pady=5)
-
-        self.detailed_check = ttk.Checkbutton(
-            opts_frame, text="Show detailed results", variable=self.detailed
-        )
-        self.detailed_check.pack(side="left", padx=20, pady=5)
 
         # -- Compare button --
         btn_frame = ttk.Frame(self.root)
@@ -87,6 +86,10 @@ class FileCompareGUI:
 
         self.clear_btn = ttk.Button(btn_frame, text="Clear", command=self._clear_results)
         self.clear_btn.pack(side="left", padx=5)
+
+        # -- Progress bar --
+        self.progress = ttk.Progressbar(self.root, mode="indeterminate")
+        self.progress.pack(fill="x", padx=10, pady=(0, 5))
 
         # -- Results area --
         results_frame = ttk.LabelFrame(self.root, text="Results")
@@ -116,11 +119,6 @@ class FileCompareGUI:
         self._clear_results()
         self.path1_var.set("")
         self.path2_var.set("")
-        if self.mode.get() == "dirs":
-            self.detailed_check.configure(state="disabled")
-            self.detailed.set(False)
-        else:
-            self.detailed_check.configure(state="normal")
 
     def _browse(self, which):
         if self.mode.get() == "files":
@@ -138,7 +136,6 @@ class FileCompareGUI:
         p1 = self.path1_var.get().strip()
         p2 = self.path2_var.get().strip()
 
-        # Validate inputs
         if not p1 or not p2:
             self._show_result("Please select both paths.", "mismatch")
             return
@@ -158,11 +155,12 @@ class FileCompareGUI:
                 self._show_result(f"Path 2 is not a valid directory:\n{p2}", "mismatch")
                 return
 
-        chunk_size = int(self.chunk_var.get())
+        chunk_size = CHUNK_OPTIONS[self.chunk_var.get()]
 
         self.compare_btn.configure(state="disabled")
         self.status_var.set("Comparing...")
         self._clear_results()
+        self.progress.start(15)
 
         thread = threading.Thread(
             target=self._run_comparison,
@@ -174,12 +172,8 @@ class FileCompareGUI:
     def _run_comparison(self, p1, p2, chunk_size):
         try:
             if self.mode.get() == "files":
-                if self.detailed.get():
-                    result = compare_files_detailed(p1, p2, chunk_size)
-                    self.root.after(0, self._display_detailed_result, p1, p2, result)
-                else:
-                    result = compare_files(p1, p2, chunk_size)
-                    self.root.after(0, self._display_simple_result, p1, p2, result)
+                result = compare_files_detailed(p1, p2, chunk_size)
+                self.root.after(0, self._display_detailed_result, p1, p2, result)
             else:
                 result = compare_directories(p1, p2, chunk_size)
                 self.root.after(0, self._display_directory_result, p1, p2, result)
@@ -189,27 +183,9 @@ class FileCompareGUI:
             self.root.after(0, self._comparison_done)
 
     def _comparison_done(self):
+        self.progress.stop()
         self.compare_btn.configure(state="normal")
         self.status_var.set("Done")
-
-    def _display_simple_result(self, p1, p2, result):
-        size1 = os.path.getsize(p1)
-        size2 = os.path.getsize(p2)
-
-        lines = []
-        if result:
-            lines.append(("IDENTICAL\n\n", "match"))
-        else:
-            lines.append(("DIFFERENT\n\n", "mismatch"))
-
-        lines.append(("File 1: ", "heading"))
-        lines.append((f"{p1}\n", "info"))
-        lines.append((f"  Size: {size1:,} bytes\n\n", "info"))
-        lines.append(("File 2: ", "heading"))
-        lines.append((f"{p2}\n", "info"))
-        lines.append((f"  Size: {size2:,} bytes\n", "info"))
-
-        self._write_lines(lines)
 
     def _display_detailed_result(self, p1, p2, result):
         size1 = os.path.getsize(p1) if os.path.exists(p1) else "N/A"

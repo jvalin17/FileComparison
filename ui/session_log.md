@@ -60,6 +60,16 @@
 - **run.sh auto-detects** correct Python with tkinter support.
 - **Python 3.14** via `/usr/local/bin/python3.14` is the working Python on this machine.
 
+#### UI Update — 3 changes
+- **Status:** COMPLETE
+- Removed "Show detailed results" checkbox — always uses `compare_files_detailed()` now
+- Removed `compare_files` import (no longer needed)
+- Added indeterminate `ttk.Progressbar` — starts on compare, stops on done
+- Replaced technical chunk sizes with layman labels: "Tiny (precise, slower)", "Small", "Standard", "Large (fast, more memory)"
+- Label changed from "Chunk Size:" to "Speed:"
+- Removed `_display_simple_result` method (dead code after detailed-by-default)
+- Net result: slightly fewer lines, simpler logic, cleaner UI
+
 ### Error Log
 
 | # | What | Error | Resolution | Attempt |
