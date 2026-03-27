@@ -105,6 +105,23 @@
 - Updated README with Fedora in auto-install list
 - All 32 tests pass after changes
 
+#### Phase 5: Find Duplicates Mode + Modular Refactor
+- **Status:** COMPLETE
+- Created `FileCompare/file_utilities.py` — shared utilities extracted from duplicated code:
+  - `collect_file_paths()` — recursive directory traversal (relative paths)
+  - `collect_file_paths_absolute()` — recursive directory traversal (absolute paths)
+  - `compute_file_hash()` — SHA-256 file hashing in chunks
+- Refactored `compare_directories()` to use shared `collect_file_paths()` (eliminated duplicated os.walk blocks)
+- Added `find_duplicates()` to `file_checker.py` — 3-stage pipeline: size filter → hash filter → byte-by-byte verification
+- Added "Find Duplicates" radio button to GUI — hides Path 2, shows single directory picker
+- Added `_display_duplicates_result()` — shows grouped results with file paths
+- Status bar shows "Scanning..." during duplicate scan
+- Added 7 tests for `find_duplicates` + 4 tests for `file_utilities` (43 total)
+- Updated PyInstaller spec: added `file_utilities` to hiddenimports, bumped version to 1.1.0
+- Updated README: features, function table, project structure, test count
+- Updated `learnings.md`: added modularity (#8) and retry-once (#9) principles
+- All 43 tests pass, GUI smoke test pass, duplicate scan on resources finds 3 groups
+
 ### Error Log
 
 | # | What | Error | Resolution | Attempt |

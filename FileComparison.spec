@@ -6,7 +6,7 @@ a = Analysis(
     pathex=['FileCompare'],
     binaries=[],
     datas=[],
-    hiddenimports=['file_checker'],
+    hiddenimports=['file_checker', 'file_utilities'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -46,7 +46,7 @@ if is_mac:
         bundle_identifier='com.filecomparison.tool',
         info_plist={
             'NSHighResolutionCapable': True,
-            'CFBundleShortVersionString': '1.0.0',
+            'CFBundleShortVersionString': '1.1.0',
         },
     )
 else:

@@ -39,6 +39,7 @@ A lightweight desktop app built with Python's built-in `tkinter`. No external de
 
 **Features:**
 - Compare files or entire directories
+- Find duplicate files within a directory (recursive scan, grouped results)
 - Shows whether files are identical or different, with the reason why
 - Shows the exact byte position where files first differ
 - Color-coded results (green = match, red = mismatch)
@@ -52,7 +53,7 @@ A lightweight desktop app built with Python's built-in `tkinter`. No external de
 ### Using as a Python Library
 
 ```python
-from FileCompare.file_checker import compare_files_detailed, compare_directories
+from FileCompare.file_checker import compare_files_detailed, compare_directories, find_duplicates
 
 # Compare two files (returns match status, reason, and byte offset of first difference)
 compare_files_detailed("file_a.txt", "file_b.txt")
@@ -62,6 +63,11 @@ compare_files_detailed("file_a.txt", "file_b.txt")
 compare_directories("/path/to/dir_a", "/path/to/dir_b")
 # {'matching': ['shared.txt'], 'differing': ['config.yml'],
 #  'only_in_first': ['a.log'], 'only_in_second': ['b.log']}
+
+# Find duplicate files in a directory
+find_duplicates("/path/to/photos")
+# {'duplicates': [['photo.jpg', 'backup/photo.jpg']], 'unique_count': 42,
+#  'total_files': 44, 'total_groups': 1}
 ```
 
 | Function | Description | Returns |
@@ -69,6 +75,7 @@ compare_directories("/path/to/dir_a", "/path/to/dir_b")
 | `compare_files(f1, f2, chunk_size=8192)` | Compares two files byte by byte | `True` / `False` |
 | `compare_files_detailed(f1, f2, chunk_size=8192)` | Compares with diagnostics | `dict` with `match`, `reason`, `first_diff_offset` |
 | `compare_directories(d1, d2, chunk_size=8192)` | Compares directories recursively | `dict` with `matching`, `differing`, `only_in_first`, `only_in_second` |
+| `find_duplicates(dir, chunk_size=8192)` | Finds duplicate files (size → hash → byte verify) | `dict` with `duplicates`, `unique_count`, `total_files`, `total_groups` |
 
 ---
 
@@ -93,13 +100,16 @@ compare_directories("/path/to/dir_a", "/path/to/dir_b")
 ```
 FileComparison/
 ├── FileCompare/
-│   ├── file_checker.py              # Core algorithm (3 functions)
+│   ├── file_checker.py              # Core algorithm (4 functions)
+│   ├── file_utilities.py            # Shared utilities (traversal, hashing)
 │   ├── FileComparisonTest.py        # Legacy tests (11 tests)
 │   └── resources/                   # Test resource files
 ├── tests/
 │   ├── test_compare_files.py        # 18 tests
 │   ├── test_compare_files_detailed.py  # 8 tests
-│   └── test_compare_directories.py  # 6 tests
+│   ├── test_compare_directories.py  # 6 tests
+│   ├── test_find_duplicates.py      # 7 tests
+│   └── test_file_utilities.py       # 4 tests
 ├── build_exe.py                      # Build standalone executable
 ├── FileComparison.spec               # PyInstaller config
 └── ui/
@@ -148,6 +158,6 @@ python3 build_exe.py
 ```bash
 cd FileComparison
 
-# Run full test suite (32 tests)
+# Run full test suite (43 tests)
 python3 -m unittest discover -s tests -v
 ```

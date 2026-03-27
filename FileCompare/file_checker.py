@@ -1,5 +1,7 @@
 import os
 
+from file_utilities import collect_file_paths, collect_file_paths_absolute, compute_file_hash
+
 
 def compare_files(file_1, file_2, chunk_size=8192):
     """
@@ -75,34 +77,87 @@ def compare_directories(dir_1, dir_2, chunk_size=8192):
     Compares two directories recursively.
     Returns a dict with keys: 'matching', 'differing', 'only_in_first', 'only_in_second'
     """
+    files_in_first = collect_file_paths(dir_1)
+    files_in_second = collect_file_paths(dir_2)
+
     results = {
         'matching': [],
         'differing': [],
-        'only_in_first': [],
-        'only_in_second': []
+        'only_in_first': sorted(files_in_first - files_in_second),
+        'only_in_second': sorted(files_in_second - files_in_first),
     }
 
-    files_1 = set()
-    for root, dirs, files in os.walk(dir_1):
-        for f in files:
-            rel_path = os.path.relpath(os.path.join(root, f), dir_1)
-            files_1.add(rel_path)
-
-    files_2 = set()
-    for root, dirs, files in os.walk(dir_2):
-        for f in files:
-            rel_path = os.path.relpath(os.path.join(root, f), dir_2)
-            files_2.add(rel_path)
-
-    results['only_in_first'] = sorted(files_1 - files_2)
-    results['only_in_second'] = sorted(files_2 - files_1)
-
-    for rel_path in sorted(files_1 & files_2):
-        f1 = os.path.join(dir_1, rel_path)
-        f2 = os.path.join(dir_2, rel_path)
-        if compare_files(f1, f2, chunk_size):
-            results['matching'].append(rel_path)
+    for relative_path in sorted(files_in_first & files_in_second):
+        full_path_1 = os.path.join(dir_1, relative_path)
+        full_path_2 = os.path.join(dir_2, relative_path)
+        if compare_files(full_path_1, full_path_2, chunk_size):
+            results['matching'].append(relative_path)
         else:
-            results['differing'].append(rel_path)
+            results['differing'].append(relative_path)
 
     return results
+
+
+def find_duplicates(directory, chunk_size=8192):
+    """
+    Scans a directory recursively and groups duplicate files.
+    Uses a 3-stage filter: size → hash → byte-by-byte verification.
+    """
+    all_file_paths = collect_file_paths_absolute(directory)
+
+    # Stage 1: Group by file size
+    files_by_size = {}
+    for file_path in all_file_paths:
+        try:
+            file_size = os.path.getsize(file_path)
+            files_by_size.setdefault(file_size, []).append(file_path)
+        except OSError:
+            continue
+
+    total_files = len(all_file_paths)
+    duplicate_groups = []
+    unique_count = 0
+
+    for file_size, same_size_files in files_by_size.items():
+        if len(same_size_files) == 1:
+            unique_count += 1
+            continue
+
+        # Stage 2: Group by hash
+        files_by_hash = {}
+        for file_path in same_size_files:
+            try:
+                file_hash = compute_file_hash(file_path, chunk_size)
+                files_by_hash.setdefault(file_hash, []).append(file_path)
+            except OSError:
+                continue
+
+        for file_hash, same_hash_files in files_by_hash.items():
+            if len(same_hash_files) == 1:
+                unique_count += 1
+                continue
+
+            # Stage 3: Byte-by-byte verification
+            clusters = []
+            for file_path in same_hash_files:
+                matched_cluster = False
+                for cluster in clusters:
+                    if compare_files(file_path, cluster[0], chunk_size):
+                        cluster.append(file_path)
+                        matched_cluster = True
+                        break
+                if not matched_cluster:
+                    clusters.append([file_path])
+
+            for cluster in clusters:
+                if len(cluster) > 1:
+                    duplicate_groups.append(sorted(cluster))
+                else:
+                    unique_count += 1
+
+    return {
+        'duplicates': duplicate_groups,
+        'unique_count': unique_count,
+        'total_files': total_files,
+        'total_groups': len(duplicate_groups),
+    }

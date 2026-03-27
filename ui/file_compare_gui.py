@@ -3,7 +3,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk, filedialog
 
-from file_checker import compare_files_detailed, compare_directories
+from file_checker import compare_files_detailed, compare_directories, find_duplicates
 
 
 SPEED_OPTIONS = {
@@ -32,7 +32,7 @@ class FileCompareGUI:
     def _build_layout(self):
         spacing = {"padx": 10, "pady": 5}
 
-        # -- Mode selector (files or directories) --
+        # -- Mode selector (files, directories, or find duplicates) --
         mode_section = ttk.LabelFrame(self.window, text="Mode")
         mode_section.pack(fill="x", **spacing)
 
@@ -44,22 +44,29 @@ class FileCompareGUI:
             mode_section, text="Compare Directories", variable=self.compare_mode,
             value="dirs", command=self._on_mode_change
         ).pack(side="left", padx=15, pady=5)
+        ttk.Radiobutton(
+            mode_section, text="Find Duplicates", variable=self.compare_mode,
+            value="duplicates", command=self._on_mode_change
+        ).pack(side="left", padx=15, pady=5)
 
         # -- Path inputs with browse buttons --
         path_section = ttk.Frame(self.window)
         path_section.pack(fill="x", **spacing)
 
-        ttk.Label(path_section, text="Path 1:").grid(row=0, column=0, sticky="w", pady=3)
+        self.path_1_label = ttk.Label(path_section, text="Path 1:")
+        self.path_1_label.grid(row=0, column=0, sticky="w", pady=3)
         self.path_1 = tk.StringVar()
         path_1_input = ttk.Entry(path_section, textvariable=self.path_1)
         path_1_input.grid(row=0, column=1, sticky="ew", padx=5, pady=3)
         ttk.Button(path_section, text="Browse", command=lambda: self._browse(1)).grid(row=0, column=2, pady=3)
 
-        ttk.Label(path_section, text="Path 2:").grid(row=1, column=0, sticky="w", pady=3)
+        self.path_2_label = ttk.Label(path_section, text="Path 2:")
+        self.path_2_label.grid(row=1, column=0, sticky="w", pady=3)
         self.path_2 = tk.StringVar()
-        path_2_input = ttk.Entry(path_section, textvariable=self.path_2)
-        path_2_input.grid(row=1, column=1, sticky="ew", padx=5, pady=3)
-        ttk.Button(path_section, text="Browse", command=lambda: self._browse(2)).grid(row=1, column=2, pady=3)
+        self.path_2_input = ttk.Entry(path_section, textvariable=self.path_2)
+        self.path_2_input.grid(row=1, column=1, sticky="ew", padx=5, pady=3)
+        self.path_2_browse = ttk.Button(path_section, text="Browse", command=lambda: self._browse(2))
+        self.path_2_browse.grid(row=1, column=2, pady=3)
 
         path_section.columnconfigure(1, weight=1)
 
@@ -120,11 +127,25 @@ class FileCompareGUI:
         self.path_1.set("")
         self.path_2.set("")
 
+        is_duplicates = self.compare_mode.get() == "duplicates"
+
+        if is_duplicates:
+            self.path_1_label.configure(text="Directory:")
+            self.path_2_label.grid_remove()
+            self.path_2_input.grid_remove()
+            self.path_2_browse.grid_remove()
+        else:
+            self.path_1_label.configure(text="Path 1:")
+            self.path_2_label.grid()
+            self.path_2_input.grid()
+            self.path_2_browse.grid()
+
     def _browse(self, which):
-        if self.compare_mode.get() == "files":
+        mode = self.compare_mode.get()
+        if mode == "files":
             path = filedialog.askopenfilename(title=f"Select File {which}")
         else:
-            path = filedialog.askdirectory(title=f"Select Directory {which}")
+            path = filedialog.askdirectory(title="Select Directory" if mode == "duplicates" else f"Select Directory {which}")
 
         if path:
             if which == 1:
@@ -134,33 +155,44 @@ class FileCompareGUI:
 
     def _on_compare(self):
         path_1 = self.path_1.get().strip()
-        path_2 = self.path_2.get().strip()
+        mode = self.compare_mode.get()
 
-        if not path_1 or not path_2:
-            self._show_message("Please select both paths.", "mismatch")
-            return
-
-        if self.compare_mode.get() == "files":
-            if not os.path.isfile(path_1):
-                self._show_message(f"Path 1 is not a valid file:\n{path_1}", "mismatch")
+        if mode == "duplicates":
+            if not path_1:
+                self._show_message("Please select a directory.", "mismatch")
                 return
-            if not os.path.isfile(path_2):
-                self._show_message(f"Path 2 is not a valid file:\n{path_2}", "mismatch")
+            if not os.path.isdir(path_1):
+                self._show_message(f"Not a valid directory:\n{path_1}", "mismatch")
                 return
         else:
-            if not os.path.isdir(path_1):
-                self._show_message(f"Path 1 is not a valid directory:\n{path_1}", "mismatch")
+            path_2 = self.path_2.get().strip()
+            if not path_1 or not path_2:
+                self._show_message("Please select both paths.", "mismatch")
                 return
-            if not os.path.isdir(path_2):
-                self._show_message(f"Path 2 is not a valid directory:\n{path_2}", "mismatch")
-                return
+
+            if mode == "files":
+                if not os.path.isfile(path_1):
+                    self._show_message(f"Path 1 is not a valid file:\n{path_1}", "mismatch")
+                    return
+                if not os.path.isfile(path_2):
+                    self._show_message(f"Path 2 is not a valid file:\n{path_2}", "mismatch")
+                    return
+            else:
+                if not os.path.isdir(path_1):
+                    self._show_message(f"Path 1 is not a valid directory:\n{path_1}", "mismatch")
+                    return
+                if not os.path.isdir(path_2):
+                    self._show_message(f"Path 2 is not a valid directory:\n{path_2}", "mismatch")
+                    return
 
         chunk_size = SPEED_OPTIONS[self.selected_speed.get()]
 
         self.compare_button.configure(state="disabled")
-        self.status_text.set("Comparing...")
+        self.status_text.set("Scanning..." if mode == "duplicates" else "Comparing...")
         self._clear_results()
         self.loading_bar.start(15)
+
+        path_2 = self.path_2.get().strip() if mode != "duplicates" else None
 
         background_task = threading.Thread(
             target=self._run_comparison,
@@ -171,12 +203,16 @@ class FileCompareGUI:
 
     def _run_comparison(self, path_1, path_2, chunk_size):
         try:
-            if self.compare_mode.get() == "files":
+            mode = self.compare_mode.get()
+            if mode == "files":
                 result = compare_files_detailed(path_1, path_2, chunk_size)
                 self.window.after(0, self._display_file_result, path_1, path_2, result)
-            else:
+            elif mode == "dirs":
                 result = compare_directories(path_1, path_2, chunk_size)
                 self.window.after(0, self._display_directory_result, path_1, path_2, result)
+            elif mode == "duplicates":
+                result = find_duplicates(path_1, chunk_size)
+                self.window.after(0, self._display_duplicates_result, path_1, result)
         except Exception as e:
             self.window.after(0, self._show_message, f"Error: {e}", "mismatch")
         finally:
@@ -263,6 +299,32 @@ class FileCompareGUI:
                 output.append((f"  {os.path.join(path_2, file_name)}\n", "mismatch"))
         else:
             output.append(("  (none)\n", "info"))
+
+        self._display_output(output)
+
+    def _display_duplicates_result(self, directory, result):
+        duplicate_groups = result["duplicates"]
+        total_files = result["total_files"]
+        unique_count = result["unique_count"]
+        total_groups = result["total_groups"]
+
+        output = []
+        output.append(("Duplicate Scan\n\n", "heading"))
+
+        output.append(("Directory: ", "heading"))
+        output.append((f"{directory}\n", "info"))
+        output.append((f"Total files scanned: {total_files}\n", "info"))
+        output.append((f"Duplicate groups found: {total_groups}\n", "info"))
+        output.append((f"Unique files: {unique_count}\n", "info"))
+
+        if duplicate_groups:
+            for group_number, group in enumerate(duplicate_groups, 1):
+                copy_label = "copies" if len(group) > 2 else "copies"
+                output.append((f"\nGroup {group_number} ({len(group)} {copy_label}):\n", "mismatch"))
+                for file_path in group:
+                    output.append((f"  {file_path}\n", "mismatch"))
+        else:
+            output.append(("\nNo duplicates found.\n", "match"))
 
         self._display_output(output)
 
