@@ -8,31 +8,7 @@ def compare_files(file_1, file_2, chunk_size=8192):
     Compares two files byte by byte.
     Returns True if the files match, False otherwise.
     """
-    try:
-        if os.path.samefile(file_1, file_2):
-            return True
-
-        file_1_size = os.path.getsize(file_1)
-        file_2_size = os.path.getsize(file_2)
-
-        file_size_read = 0
-
-        if file_1_size != file_2_size:
-            return False
-
-        if file_2_size == 0:
-            return True
-
-        with open(file_1, "rb") as f1, open(file_2, "rb") as f2:
-            while file_size_read < file_1_size:
-                if f1.read(chunk_size) != f2.read(chunk_size):
-                    return False
-                file_size_read += chunk_size
-
-        return True
-
-    except (FileNotFoundError, PermissionError, OSError):
-        return False
+    return compare_files_detailed(file_1, file_2, chunk_size)['match']
 
 
 def compare_files_detailed(file_1, file_2, chunk_size=8192):
