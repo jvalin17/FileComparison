@@ -84,6 +84,19 @@
 - Local variable renames: `tag`→`color`, `lines`→`output`, `f`→`file_name`
 - Smoke test: PASS (import, method check, full GUI launch + auto-close)
 
+#### Phase 4: Standalone Executable (PyInstaller)
+- **Status:** COMPLETE
+- Created `.gitignore` to exclude `build/`, `dist/`, `__pycache__/`
+- Created `FileComparison.spec` — PyInstaller config with `pathex=['FileCompare']` and `hiddenimports=['file_checker']` to handle the `sys.path` import hack
+- Created `build_exe.py` — cross-platform build script
+- macOS: onedir mode with `.app` bundle (onefile + .app was deprecated in PyInstaller v6, will error in v7)
+- Windows/Linux: onefile mode (single executable)
+- Excludes unused stdlib: `unittest`, `test`, `email`, `http`, `xml`, `pydoc`, `doctest`
+- Build result: 26 MB `.app` bundle
+- Verification: `.app` launches successfully, dev workflow (`run.sh`) still works
+- Updated README with download/build instructions, updated project structure
+- Added link to GitHub Releases page for pre-built downloads
+
 ### Error Log
 
 | # | What | Error | Resolution | Attempt |

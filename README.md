@@ -100,12 +100,48 @@ FileComparison/
 │   ├── test_compare_files.py        # 18 tests
 │   ├── test_compare_files_detailed.py  # 8 tests
 │   └── test_compare_directories.py  # 6 tests
+├── build_exe.py                      # Build standalone executable
+├── FileComparison.spec               # PyInstaller config
 └── ui/
     ├── app.py                        # Entry point
-    ├── file_compare_gui.py           # GUI (~220 lines)
+    ├── file_compare_gui.py           # GUI (~285 lines)
     ├── run.sh                        # macOS/Linux launcher (auto-installs deps)
     └── run.bat                       # Windows launcher
 ```
+
+### Download (No Python Required)
+
+Pre-built standalone executables are available on the [Releases](https://github.com/jvalin17/FileComparison/releases) page. Download, unzip, and run — no Python installation needed.
+
+> **macOS:** You may need to right-click > Open the first time (unsigned app).
+
+---
+
+### Building Standalone Executables
+
+Build a standalone executable that runs without Python installed.
+
+#### Prerequisites (build machine only)
+```bash
+pip install pyinstaller
+```
+
+#### Build
+```bash
+cd FileComparison
+python3 build_exe.py
+```
+
+#### Output
+| Platform | Output | Location |
+|----------|--------|----------|
+| macOS | `.app` bundle | `dist/FileComparison Tool.app` |
+| Windows | `.exe` file | `dist/FileComparison Tool.exe` |
+| Linux | Binary | `dist/FileComparison Tool` |
+
+> **Note:** PyInstaller builds are platform-specific. Build on the target OS.
+
+---
 
 ### Running Tests
 
