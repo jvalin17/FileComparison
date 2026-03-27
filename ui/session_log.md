@@ -97,6 +97,14 @@
 - Updated README with download/build instructions, updated project structure
 - Added link to GitHub Releases page for pre-built downloads
 
+#### Security Audit + Fedora Support
+- **Status:** COMPLETE
+- Full security audit: no critical or high-severity issues found
+- Removed `print()` from `file_checker.py` line 33 — stdout output invisible in GUI/standalone app, exceptions already handled by GUI's try/except
+- Added Fedora/RHEL support to `run.sh` — auto-installs `python3-tkinter` via `dnf`
+- Updated README with Fedora in auto-install list
+- All 32 tests pass after changes
+
 ### Error Log
 
 | # | What | Error | Resolution | Attempt |

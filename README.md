@@ -26,7 +26,7 @@ run.bat
 That's it. The `run.sh` script will:
 1. Find Python 3 on your system
 2. Check if tkinter is available
-3. If not, install it automatically (via Homebrew on macOS, apt on Linux)
+3. If not, install it automatically (Homebrew on macOS, dnf on Fedora, apt on Ubuntu/Debian)
 4. Launch the app
 
 > **Windows users:** tkinter comes pre-installed with Python from [python.org](https://www.python.org/downloads/). Just make sure to check "tcl/tk" during installation.

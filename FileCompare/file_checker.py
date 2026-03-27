@@ -29,8 +29,7 @@ def compare_files(file_1, file_2, chunk_size=8192):
 
         return True
 
-    except (FileNotFoundError, PermissionError, OSError) as e:
-        print(f"File not found; Invalid Path: {e}")
+    except (FileNotFoundError, PermissionError, OSError):
         return False
 
 
