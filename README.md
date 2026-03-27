@@ -2,7 +2,7 @@
 
 #### Checks if two files are same or not.
 
-#### Language: Python 2.7
+#### Language: Python 3.x
 #### Program Name:  file_checker.py, FileComparisonTest.py
 
 ##### Input:
