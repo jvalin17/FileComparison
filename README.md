@@ -123,7 +123,11 @@ FileComparison/
 
 Pre-built standalone executables are available on the [Releases](https://github.com/jvalin17/FileComparison/releases) page. Download, unzip, and run — no Python installation needed.
 
-> **macOS:** You may need to right-click > Open the first time (unsigned app).
+> **macOS first launch:** The app is unsigned, so macOS will block it. After unzipping, either:
+> - Double-click the app → get the warning → go to **System Settings > Privacy & Security** → click **"Open Anyway"**
+> - Or run in Terminal: `xattr -cr "FileComparison Tool.app"` then open it
+>
+> You only need to do this once.
 
 ---
 
