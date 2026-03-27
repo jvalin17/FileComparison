@@ -1,48 +1,85 @@
 ## FileComparison
 
-#### Checks if two files are same or not.
+Compares files and directories byte-by-byte to determine if they are identical.
 
 #### Language: Python 3.x
-#### Program Name:  file_checker.py, FileComparisonTest.py
 
-##### Input:
-Make sure all files are in same folder.
-The code takes test files.
+#### Functions
 
-##### Output:
-It will determine whether it has same content or not.
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `compare_files(file_1, file_2, chunk_size=8192)` | Compares two files byte by byte | `True` if identical, `False` otherwise |
+| `compare_files_detailed(file_1, file_2, chunk_size=8192)` | Compares two files with diagnostics | `dict` with `match`, `reason`, `first_diff_offset` |
+| `compare_directories(dir_1, dir_2, chunk_size=8192)` | Compares two directories recursively | `dict` with `matching`, `differing`, `only_in_first`, `only_in_second` |
 
-##### Approach:
-A function is written that returns True if both files are same and returns False otherwise.
+#### Usage
 
-##### Algorithm:
+```python
+from FileCompare.file_checker import compare_files, compare_files_detailed, compare_directories
 
-First it will check if both file sizes are same or not. 
-If file sizes are not same, it means it is different files and so it will return Boolean False. 
+# Simple comparison
+compare_files("file_a.txt", "file_b.txt")  # True or False
 
-If both file sizes are same. 
-It will compare both files’ content with a chunk of bytes at a time. 
+# Detailed comparison (shows where files differ)
+compare_files_detailed("file_a.txt", "file_b.txt")
+# {'match': False, 'reason': 'content_mismatch', 'first_diff_offset': 1024}
 
-If the chunks do not match, it will return Boolean value false and break the loop. 
+# Directory comparison
+compare_directories("/path/to/dir_a", "/path/to/dir_b")
+# {'matching': ['shared.txt'], 'differing': ['config.yml'], 'only_in_first': ['a.log'], 'only_in_second': ['b.log']}
+```
 
-At the end, if everything is same, it will return. 
+#### Algorithm
 
+1. If both paths point to the same file (via `os.path.samefile`), return `True`
+2. Compare file sizes — if different, return `False`
+3. If both files are empty, return `True`
+4. Read both files in configurable chunks (default 8192 bytes), comparing each pair
+5. If any chunk differs, return `False`
+6. If all chunks match, return `True`
 
-##### Complexity:
- Time Complexity: O(n) if size is n bytes 
- Space Complexity: O(m) if chunk size is m 
+#### Complexity
 
+| | Value |
+|---|---|
+| Time | O(n) where n = file size in bytes |
+| Space | O(m) where m = chunk size |
 
-##### Tests:
-It checks for following tests:  
-Both Empty Files Test   
-Both Same Files Test 
-Both Different Image Files Test  
-Two Different Extension Files Test  
-Different Files Test   
-Both Different Image Files Test  
-Invalid File Location Test  
-One Extra Space Test  
-One Letter Different Test  
-Both Same Audio Files Test  
-Both Same Image Files Test  
+#### Project Structure
+
+```
+FileComparison/
+├── FileCompare/
+│   ├── file_checker.py              # Core module (3 functions)
+│   ├── FileComparisonTest.py        # Legacy tests (11 tests)
+│   └── resources/                   # Test resource files
+├── tests/
+│   ├── test_compare_files.py        # 18 tests
+│   ├── test_compare_files_detailed.py  # 8 tests
+│   └── test_compare_directories.py  # 6 tests
+├── planning.md
+└── session_log.md
+```
+
+#### Running Tests
+
+```bash
+# Run full test suite (32 tests)
+python3 -m unittest discover -s tests -v
+
+# Run legacy tests
+cd FileCompare && python3 -m unittest FileComparisonTest -v
+```
+
+#### Tests (32 total)
+
+**`test_compare_files.py` (18 tests)**
+- Same files, different files, empty files, images, audio, PDFs, docx
+- Edge cases: invalid paths, empty string, symlinks, custom chunk sizes, path variations
+
+**`test_compare_files_detailed.py` (8 tests)**
+- All 5 reason types: `same_file`, `both_empty`, `identical`, `size_mismatch`, `content_mismatch`
+- Exact byte offset accuracy, error handling, symlink detection
+
+**`test_compare_directories.py` (6 tests)**
+- Identical dirs, different content, unique files, empty dirs, nested subdirectories
