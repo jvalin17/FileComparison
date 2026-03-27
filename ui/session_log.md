@@ -76,6 +76,14 @@
 - Rewrote README: added "Quick Start" clone-to-run instructions, explained what `run.sh` does automatically
 - Updated `run.sh`: auto-installs tkinter via Homebrew (macOS) or apt (Linux) if missing
 
+#### Variable Rename for Readability
+- **Status:** COMPLETE
+- Renamed all variables and methods in `file_compare_gui.py` to be readable for non-tkinter developers
+- Key renames: `root`→`window`, `mode`→`compare_mode`, `chunk_var`→`selected_speed`, `path1_var`/`path2_var`→`path_1`/`path_2`, `status_var`→`status_text`, `results_text`→`results_display`, `progress`→`loading_bar`, `compare_btn`→`compare_button`, `chunk_combo`→`speed_dropdown`, `pad`→`spacing`
+- Method renames: `_build_ui`→`_build_layout`, `_bind_keys`→`_setup_keyboard_shortcuts`, `_write_lines`→`_display_output`, `_show_result`→`_show_message`, `_display_detailed_result`→`_display_file_result`, `_comparison_done`→`_on_comparison_done`
+- Local variable renames: `tag`→`color`, `lines`→`output`, `f`→`file_name`
+- Smoke test: PASS (import, method check, full GUI launch + auto-close)
+
 ### Error Log
 
 | # | What | Error | Resolution | Attempt |
